@@ -1,11 +1,9 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 
 function ListEmployeeComponent() {
   const [employees, setEmployees] = useState([]);
-
-  let navigate = useNavigate();
 
   async function getData() {
     const res = await axios.get("http://localhost:8081/api/v1/employees");
@@ -15,17 +13,21 @@ function ListEmployeeComponent() {
 
   useEffect(() => {
     getData();
-  }, []);
+  }, [employees]);
 
-  function updateEmp(id) {
-    console.log("Updated for id: " + id);
-    // navigate(`/update-employees/${id}`)
+  async function deleteEmp(id) {
+    console.log("Deleted");
+    await axios.delete(`http://localhost:8081/api/v1/employees/${id}`);
   }
 
   return (
     <div className="container">
       <h2 className="text-center">Employees List</h2>
-      <Link to="/add-employees" className="btn btn-primary">
+      <Link
+        to="/add-employees"
+        style={{ margin: "10px 1px" }}
+        className="btn btn-success"
+      >
         Add Employee
       </Link>
       <table className="table table-stripped table-bordered">
@@ -46,11 +48,20 @@ function ListEmployeeComponent() {
                 <td>{emp.email}</td>
                 <td>
                   <Link
-                    className="btn btn-warning"
+                    className="btn btn-primary"
                     to={`/update-employees/${emp.id}`}
                   >
                     Update
                   </Link>
+                  <button
+                    style={{ marginLeft: "10px" }}
+                    onClick={() => {
+                      deleteEmp(emp.id);
+                    }}
+                    className="btn btn-danger"
+                  >
+                    Delete
+                  </button>
                 </td>
               </tr>
             );
